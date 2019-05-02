@@ -1,24 +1,24 @@
-$ipconfiguredvivo = (Resolve-DnsName sipfed.havra.me).IpAddress
-$ipconfiguredtim = (Resolve-DnsName vpn.havra.me).IpAddress
-$ipvivo = (Resolve-DnsName -Server 8.8.8.8 home-vivo.no-ip.info).IpAddress
-$iptim = (Resolve-DnsName -Server 8.8.8.8 home-tim.no-ip.info).IpAddress
+$ipConfiguredMainISP = (Resolve-DnsName sipfed.havra.me).IpAddress
+$ipConfiguredSecondaryISP = (Resolve-DnsName vpn.havra.me).IpAddress
+$ipMainISP = (Resolve-DnsName -Server 8.8.8.8 home-vivo.no-ip.info).IpAddress
+$ipSecondaryISP = (Resolve-DnsName -Server 8.8.8.8 home-tim.no-ip.info).IpAddress
 $ipns1= (Resolve-DnsName -Server 8.8.8.8 havranekns1.cloudapp.net).IpAddress
 $ipns2= (Resolve-DnsName -Server 8.8.8.8 havranekns2.cloudapp.net).IpAddress
 $iprp= (Resolve-DnsName -Server 8.8.8.8 havranekns1.cloudapp.net).IpAddress
-Write-Host "Dyn IP VIVO: $ipvivo " 
-Write-Host "Dyn IP TIM: $iptim " 
-Write-Host "Configured VIVO IP: $ipconfiguredvivo"
-Write-Host "Configured TIM IP: $ipconfiguredtim"
+Write-Host "Dyn Main IP: $ipMainISP " 
+Write-Host "Dyn Secondary IP: $ipSecondaryISP " 
+Write-Host "Configured Main IP: $ipConfiguredMainISP"
+Write-Host "Configured Secondary IP: $ipConfiguredSecondaryISP"
  
 
-if(($ipconfiguredvivo -eq $ipvivo) -and ($ipconfiguredtim -eq $iptim))
+if(($ipConfiguredMainISP -eq $ipMainISP) -and ($ipConfiguredSecondaryISP -eq $ipSecondaryISP))
 {
 Write-Host -ForegroundColor Green "No changes detected on both IP addresses... nothing to do."
 }
 
 else
 {
-Write-Host "IP has Changed... Starting to Update."
+Write-Host "IP has Changed... Updating records."
 
 # ns1.havra.me --> havranekns1.cloudapp.net
 $cmdDelete = "dnscmd havranek-DC01 /RecordDelete havra.me sts A /f"
@@ -96,7 +96,7 @@ Invoke-Expression $cmdAdd
 
 # sipfed.havra.me --> vivo
 $cmdDelete = "dnscmd havranek-DC01 /RecordDelete havra.me sipfed A /f"
-$cmdAdd = "dnscmd havranek-DC01 /RecordAdd havra.me sipfed A $ipvivo"
+$cmdAdd = "dnscmd havranek-DC01 /RecordAdd havra.me sipfed A $ipMainISP"
 Write-Host "Running the following command: $cmdDelete" 
 Invoke-Expression $cmdDelete 
 Write-Host "Running the following command: $cmdAdd" 
@@ -104,7 +104,7 @@ Invoke-Expression $cmdAdd
 
 # access.havra.me --> vivo
 $cmdDelete = "dnscmd havranek-DC01 /RecordDelete havra.me access A /f"
-$cmdAdd = "dnscmd havranek-DC01 /RecordAdd havra.me access A $ipvivo"
+$cmdAdd = "dnscmd havranek-DC01 /RecordAdd havra.me access A $ipMainISP"
 Write-Host "Running the following command: $cmdDelete" 
 Invoke-Expression $cmdDelete 
 Write-Host "Running the following command: $cmdAdd" 
@@ -112,7 +112,7 @@ Invoke-Expression $cmdAdd
 
 # av.havra.me --> vivo
 $cmdDelete = "dnscmd havranek-DC01 /RecordDelete havra.me av A /f"
-$cmdAdd = "dnscmd havranek-DC01 /RecordAdd havra.me av A $ipvivo"
+$cmdAdd = "dnscmd havranek-DC01 /RecordAdd havra.me av A $ipMainISP"
 Write-Host "Running the following command: $cmdDelete" 
 Invoke-Expression $cmdDelete 
 Write-Host "Running the following command: $cmdAdd" 
@@ -120,7 +120,7 @@ Invoke-Expression $cmdAdd
 
 # webconf.havra.me --> vivo
 $cmdDelete = "dnscmd havranek-DC01 /RecordDelete havra.me webconf A /f"
-$cmdAdd = "dnscmd havranek-DC01 /RecordAdd havra.me webconf A $ipvivo"
+$cmdAdd = "dnscmd havranek-DC01 /RecordAdd havra.me webconf A $ipMainISP"
 Write-Host "Running the following command: $cmdDelete" 
 Invoke-Expression $cmdDelete 
 Write-Host "Running the following command: $cmdAdd" 
@@ -128,7 +128,7 @@ Invoke-Expression $cmdAdd
 
 # vpn.havra.me --> tim
 $cmdDelete = "dnscmd havranek-DC01 /RecordDelete havra.me vpn A /f"
-$cmdAdd = "dnscmd havranek-DC01 /RecordAdd havra.me vpn A $iptim"
+$cmdAdd = "dnscmd havranek-DC01 /RecordAdd havra.me vpn A $ipSecondaryISP"
 Write-Host "Running the following command: $cmdDelete" 
 Invoke-Expression $cmdDelete 
 Write-Host "Running the following command: $cmdAdd" 
